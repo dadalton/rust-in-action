@@ -255,7 +255,7 @@ An ARRAY is a tightly-packed collection of the same thing
 [1, 2, 3]
 [0; 100] // 0 is repeated 100 times
 */
-
+/*
 fn main() {
     let one             = [1, 2, 3];
     let two: [u8; 3]    = [1, 2, 3]; // array [T; n] - T is the type, n # elements
@@ -278,6 +278,7 @@ fn main() {
         println!("\t({:?} = {})", a, sum);
     }
 }
+*/
 /* OUTPUT
 [1, 2, 3]:      1 + 10 = 11     2 + 10 = 12     3 + 10 = 13     ([1, 2, 3] = 6)
 [1, 2, 3]:      1 + 10 = 11     2 + 10 = 12     3 + 10 = 13     ([1, 2, 3] = 6)
@@ -306,3 +307,8 @@ see ch2-introducing-vec.rs
 
 ------------- THIRD-PARTY CODE ---------------
 
+cargo add crate@version
+cargo build
+cargo doc 
+
+*/
