@@ -226,11 +226,83 @@ fn main() {
 */
 
 // ---------- LIFETIMES ---------------
+/*
 fn add_with_lifetimes<'a, 'b>(i: &'a i32, j: &'b i32) -> i32 {
     *i + *j
 }
+*/
 // <'a, 'b> declares lifetime variables 'a, 'b, within scope of the the function
 // i: &'a i32 binds 'a to the lifetime of i - reads "parameter i is a reference to an i32 with lifetime a"
 // the compiler can infer most lifestimes without explicit annotation
 // difficult cases - such as functions that accept multiple refs as arguments or return a reference - may require explicit annotation
+
+/*
+
+
+STRING STUFF HEAH
+
+
+*/
+
+// ---------- ARRAYS, SLICES, VECTORS ------------
+/* 
+- Arrays [T; n] are fixed-width and extremely lightweight
+- Vectors are growable at the cost of a small runtime penalty
+
+An ARRAY is a tightly-packed collection of the same thing
+- its items are replacable but its size is fixed
+
+[1, 2, 3]
+[0; 100] // 0 is repeated 100 times
+*/
+
+fn main() {
+    let one             = [1, 2, 3];
+    let two: [u8; 3]    = [1, 2, 3]; // array [T; n] - T is the type, n # elements
+    // [u8; 3] is a different type to [u8; 4] - size matters
+    let blank1          = [0; 3];
+    let blank2: [u8; 3] = [0; 3];
+
+    let arrays = [one, two, blank1, blank2];
+
+    for a in &arrays {
+        print!("{:?}: ", a);
+        for n in a.iter() {
+            print!("\t{} + 10 = {}", n, n+10);
+        }
+
+        let mut sum = 0;
+        for i in 0..a.len() {
+            sum += a[i];
+        }
+        println!("\t({:?} = {})", a, sum);
+    }
+}
+/* OUTPUT
+[1, 2, 3]:      1 + 10 = 11     2 + 10 = 12     3 + 10 = 13     ([1, 2, 3] = 6)
+[1, 2, 3]:      1 + 10 = 11     2 + 10 = 12     3 + 10 = 13     ([1, 2, 3] = 6)
+[0, 0, 0]:      0 + 10 = 10     0 + 10 = 10     0 + 10 = 10     ([0, 0, 0] = 0)
+[0, 0, 0]:      0 + 10 = 10     0 + 10 = 10     0 + 10 = 10     ([0, 0, 0] = 0)
+*/
+/*
+- Typically arrays interact with another type called a slice - [T]
+- The slice itself is interacted with by reference &[T] - also called a slice
+- Requesting an out of bounds elements crashes (panics) the program
+
+SLICES [T] are dynamically sized array-like objects
+- this means their size is unknown at compile time
+- however, like arrays, they don't expand or contract
+- It's easier to implement traits for slices than arrays
+- Slices can act as a view on arrays - and other slices
+- "view" meaning fast, read-only access
+- slice size is made up of two usize components - a pointer and a length
+
+In practice there's not a significant difference between arrays and slices
+- the implementation details are important for performance-critical applications
+
+VECTORS - Vec[T]
+
+see ch2-introducing-vec.rs
+
+------------- THIRD-PARTY CODE ---------------
 
