@@ -312,3 +312,44 @@ cargo build
 cargo doc 
 
 */
+
+// ---------- I/O ------------------
+/*
+// manually loop 
+use std::fs::File;
+ use std::io::BufReader; // buffered I/O can reduce system calls to the OS
+ use std::io::prelude::*;
+ 
+ fn main() {
+   let f = File::open("readme.md").unwrap(); // panic if readme.md isn't present
+   let mut reader = BufReader::new(f);
+ 
+   let mut line = String::new(); // reuse a single String object
+ 
+   loop {
+     let len = reader.read_line(&mut line)
+                     .unwrap(); // error handling if reading from disk fails
+     if len == 0 {
+       break
+     }
+ 
+     println!("{} ({} bytes long)", line, len);
+ 
+     line.truncate(0); // shrink String to length 0 to prevent persistence
+   }
+ }
+*/
+// read file line by line using BufReader::lines()
+use std::fs::File;
+ use std::io::BufReader;
+ use std::io::prelude::*;
+ 
+ fn main() {
+   let f = File::open("readme.md").unwrap();
+   let reader = BufReader::new(f);
+ 
+   for line_ in reader.lines() { // BufReader::lines() removes trailing newline
+     let line = line_.unwrap();  // error handling
+     println!("{} ({} bytes long)", line, line.len());
+   }
+ }
