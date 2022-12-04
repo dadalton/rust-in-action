@@ -22,7 +22,7 @@ fn main() {
       .help("The pattern to search for")
       .takes_value(true)
       .required(true))
-    .arg(ARG::with_name("input")
+    .arg(Arg::with_name("input")
       .help("File to search")
       .takes_value(true)
       .required(true))

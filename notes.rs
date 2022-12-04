@@ -1,5 +1,5 @@
 
-// Multiple ways to declare integers
+// ---------- INTEGERS ----------------
 /*
 fn main() {
     let a = 10; // Compiler can infer types
@@ -97,8 +97,7 @@ fn main() {
 }
 */
 
-/*//   |     unresolved import
-//     |     help: a similar path exists: `std::num`
+/*
 use std::num::Complex;
 
     fn main() {
