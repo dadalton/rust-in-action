@@ -42,41 +42,144 @@ fn main() {
 
 // "NEVER" TYPE ! - indicates a function never returns
 
-// 3.2 Modeling files with struct
+//----- 3.2 Modeling files with struct ------
 
 // struct allows creation of a composite type 
 // - analagous to object or record in other languages
+/*
+#![allow(unused_variables)]
 
-#[derive(Debug)]        // allows println! to print File
+    #[derive(Debug)]        // allows println! to print File
     struct File {
         name: String,   // fields require explicit lifetimes if they're a ref to another object
         data: Vec<u8>,  // here the field lifetimes are implicit
     }
 
+    fn open(f: &mut File) -> bool {
+        true
+    }
+
+    fn close(f: &mut File) -> bool {
+        true
+    }
+
+    fn read(
+        f: &File,
+        save_to: &mut Vec<u8>,
+    ) -> usize {
+        let mut tmp = f.data.clone();
+        let read_length = tmp.len();
+    
+        save_to.reserve(read_length); // reserve capacity for read_length amount of elements
+        save_to.append(&mut tmp);
+        read_length
+    }
+
     fn main() {
-        let f1 = File {
-            name: String::from("f1.txt"),  // generate owned strings from string literals
-            data: Vec::new(),              // simulate empty file
+        let mut f2 = File {
+            name: String::from("2.txt"),
+            data: vec![114, 117, 115, 116, 33],
         };
 
-        let f1_name = &f1.name;            // accessing fields by reference prevents use after move
-        let f1_length = &f1.data.len();
+        let mut buffer: Vec<u8> = vec![];
 
-        println!("{:?}", f1);
-        println!("{} is {} bytes long", f1_name, f1_length);
+        open(&mut f2);
+        let f2_length = read(&f2, &mut buffer);
+        close(&mut f2);
+
+        let text = String::from_utf8_lossy(&buffer); // convert Vec to String, non-UTF-8 bytes replaced with ?
+
+        println!("{:?}", f2);
+        println!("{} is {} bytes long", &f2.name, f2_length);
+        println!("{}", text)
     }
+*/
+    //     let f1 = File {
+    //         name: String::from("f1.txt"),  // generate owned strings from string literals
+    //         data: Vec::new(),              // simulate empty file
+    //     };
+
+    //     let f1_name = &f1.name;            // accessing fields by reference prevents use after move
+    //     let f1_length = &f1.data.len();
+
+    //     println!("{:?}", f1);
+    //     println!("{} is {} bytes long", f1_name, f1_length);
+    // }
     
 // NEWTYPE PATTERN
+// wrap a core type with a struct to create a new type
+/*
+  struct Hostname(String); // hostname will be our new type
 
-struct Hostname(String);
+    fn connect(host: Hostname) {             // creates host of type Hostname
+        println!("connected to {}", host.0); // access host's data
+    }
 
-fn connect(host: Hostname) {
-    println!("connected to {}", host.0);
+    fn main() {
+        let ordinary_string = String::from("localhost"); // get the string
+        let host = Hostname ( ordinary_string.clone() ); // create a Hostname type using a copy of the string
+
+        connect(ordinary_string); // this will generate an error as it is a String and not a Hostname type
 }
+*/
 
-fn main() {
-    let ordinary_string = String::from("localhost");
-    let host = Hostname ( ordinary_string.clone() );
+// ------ 3.3 Adding methods to a struct with impl --------
+/* 
+- Methods are functions coupled to some object
+- Syntactically speaking, they are functions that don't need to specify one of their arguments
+    - e.g. read(f, buffer) can be simplified as f.read(buffer)
+- Rust does not contain the class keyword - unlike other languages that support methods
+    - struct and enum can seem like classes but do not support injeritance
+- methods are defined with impl blocks, which are distinct from struc/enum
 
-    connect(ordinary_string);
-}
+- Rust:
+    struct/enum File{
+        Data
+    }
+
+    impl File {
+        Methods
+    }
+
+- Classes in other languages:
+    class File {
+        Data
+        Methods
+    }
+
+- the new() method is typically used to create objects
+
+- literal syntax:
+    File {
+        name: String::from("f1.txt"),
+        data: Vec::new(),
+    };
+
+- File::new() syntax:
+    File::new("f1.txt", vec![]);
+*/
+
+#[derive(Debug)]
+    struct File {
+        name: String,
+        data: Vec<u8>,
+    }
+
+    impl File {
+        fn new(name: &str) -> File {
+            File {
+                name: String::from(name),
+                data: Vec::new(),
+            }
+        }
+    }
+
+    fn main() {
+        let f3 = File::new("f3.txt");
+
+        let f3_name = &f3.name;
+        let f3_length = f3.data.len();
+
+        println!("{:?}", f3);
+        println!("{} is {} bytes long", f3_name, f3_length);
+    }
