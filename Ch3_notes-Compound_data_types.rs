@@ -42,6 +42,8 @@ fn main() {
 
 // "NEVER" TYPE ! - indicates a function never returns
 
+// 3.2 Modeling files with struct
+
 // struct allows creation of a composite type 
 // - analagous to object or record in other languages
 
@@ -64,3 +66,17 @@ fn main() {
         println!("{} is {} bytes long", f1_name, f1_length);
     }
     
+// NEWTYPE PATTERN
+
+struct Hostname(String);
+
+fn connect(host: Hostname) {
+    println!("connected to {}", host.0);
+}
+
+fn main() {
+    let ordinary_string = String::from("localhost");
+    let host = Hostname ( ordinary_string.clone() );
+
+    connect(ordinary_string);
+}
