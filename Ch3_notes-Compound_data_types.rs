@@ -46,7 +46,7 @@ fn main() {
 
 // struct allows creation of a composite type 
 // - analagous to object or record in other languages
-
+/*
 #[derive(Debug)]        // allows println! to print File
     struct File {
         name: String,   // fields require explicit lifetimes if they're a ref to another object
@@ -65,9 +65,9 @@ fn main() {
         println!("{:?}", f1);
         println!("{} is {} bytes long", f1_name, f1_length);
     }
-    
+*/
 // NEWTYPE PATTERN
-
+/*
 struct Hostname(String);
 
 fn connect(host: Hostname) {
@@ -80,3 +80,74 @@ fn main() {
 
     connect(ordinary_string);
 }
+*/
+
+// ------ 3.4 RETURNING ERRORS ------
+/*
+Dealing with hardware is unreliable. There may be hardware faults, OS permission issues, etc.
+
+A simple method to signal an error is to check the value of a global variable.
+
+*/
+// A Rust version of global variable error check:
+/*
+static mut ERROR: i32 = 0; // global variable with a static lifetime valid for life of the program
+
+// ...
+
+fn main() {
+    let mut f = File::new("something.txt");
+
+    read(f, buffer);
+    unsafe {            // modifying static mut variables requires unsafe
+        if ERROR != 0 {
+            panic!("An error has occurred while reading the file")
+        }
+    }
+
+    close(f);
+    unsafe {
+        if ERROR != 0 {
+            panic!("An error has occurred while closing the file")
+        }
+    }
+}
+*/
+/*
+use rand::{random};
+
+    static mut ERROR: isize = 0;
+
+    struct File;
+
+    #[allow(unused_variables)]
+    fn read(f: &File, save_to: &mut Vec<u8>) -> usize {
+        if random() && random() && random() { // random() is a coin flip, this will be true 1/8 times
+            unsafe {
+                ERROR = 1;
+            }
+        }
+        0
+    }
+
+#[allow(unused_mut)]
+fn main() {
+    let mut f = File;
+    let mut buffer = vec![];
+
+    read(&f, &mut buffer);
+    unsafe {
+        if ERROR != 0 {
+            panic!("An error has occurred!")
+        }
+    }
+}
+
+*/
+
+/* CONST VS LET
+- let allows interior mutability
+- at the compiler level, let allows aliasing - referencing - the same data 
+in multiple locations simultaneously
+- mutable borrows never alias data
+*/
