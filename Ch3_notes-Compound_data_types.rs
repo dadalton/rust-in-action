@@ -250,9 +250,168 @@ fn main() {
 
 */
 
-/* CONST VS LET
+/* ----- CONST VS LET -----
 - let allows interior mutability
 - at the compiler level, let allows aliasing - referencing - the same data 
 in multiple locations simultaneously
 - mutable borrows never alias data
 */
+
+/* ------ RESULT ------
+Error handling uses a type that stands for both the standard and error case - the Result type
+Result has two states - Ok and Err
+
+Functions that interact with the file system return Result<File, String>
+- When the function succeeds, it returns Ok(File)
+- When it fails, it returns Err(String) - string allows an easy way to report error messages
+- Unwrap() is needed to extract the value. It unwraps Ok(File) to produce File and crashes with Err(String)
+
+
+*/
+/*
+use rand::prelude::*;
+
+    fn one_in(denominator: u32) -> bool {
+        thread_rng().gen_ratio(1, denominator)
+    }
+
+    #[derive(Debug)]
+    struct File {
+        name: String,
+        data: Vec<u8>,
+    }
+
+    impl File {
+        fn new(name: &str) -> File {
+            File {
+                name: String::from(name),
+                data: Vec::new()
+            }
+        }
+    
+
+        fn new_with_data(name: &str, data: &Vec<u8>) -> File {
+            let mut f = File::new(name);
+            f.data = data.clone();
+            f
+        }
+
+        fn read (
+            self: &File,
+            save_to: &mut Vec<u8>,
+        ) -> Result<usize, String> { // Ok is usize, Err is String
+            let mut tmp = self.data.clone();
+            let read_length = tmp.len();
+            save_to.reserve(read_length);
+            save_to.append(&mut tmp);
+            Ok(read_length)
+        }
+    }
+
+    fn open(f: File) -> Result<File, String> {
+        if one_in(10_000) { // Generates error with probability 1/10000
+            let err_msg = String::from("Permission denied");
+            return Err(err_msg);
+        }
+        Ok(f)
+    }
+
+    fn open(f: File) -> Result<File, String> {
+        if one_in(100_000) {
+            let err_msg = String::from("Interrupted by signal!");
+            return Err(err_msg);
+        }
+        Ok(f)
+    }
+
+    fn main() {
+        let f4_data: Vec<u8> = vec![114, 117, 115, 116, 33];
+        let mut f4 = File::new_with_data("4.txt", &f4_data);
+
+        let mut buffer: Vec<u8> = vec![]; // placeholder
+
+        f4 = open(f4).unwrap();
+        let f4_length = f4.read(&mut buffer).unwrap();
+        f4 = close(f4).unwrap();
+
+        let text = String::from_utf8_lossy(&buffer);
+
+        println!("{:?}", f4);
+        println!("{} is {} bytes long", &f4.name, f4_length);
+        println!("{}", text);
+    }
+
+*/// Result is an enum defined in the standard library.
+
+// -------- ENUM ---------
+/*
+An enum is a type that can represent multiple known variants
+eg:
+enum Suit {
+    Clubs,
+    Spades,
+    Diamonds,
+    Hearts,
+}
+*/
+
+// Using enum to parse an event log
+#[derive(Debug)]
+enum Event {
+    Update,
+    Delete,
+    Unknown,
+}
+
+type Message = String;
+
+fn parse_log(line: &str) -> (Event, Message) {
+    let parts: Vec<_> = line // infer element type
+                        .splitn(2, ' ')
+                        .collect(); // takes an iterator and returns Vec
+    if parts.len() == 1 { // error if the line isn't split
+        return (Event::Unknown, String::from(line))
+    } 
+
+    let event = parts(0);
+    let rest = String::from(parts[1]);
+
+    match event {
+        "UPDATE" | "update" => (Event::Update, rest),
+        "DELETE" | "delete" => (Event::Delete, rest),
+        _ => (Event::Unknown, String::from(line)),
+    }
+}
+
+fn main() {
+    let log = "BEGIN Transaction XK342
+UPDATE 234:LS/32231 {\"price\": 31.00} -> {\"price\": 40.00}
+DELETE 342:LO/22111";
+
+    for line in log.lines() {
+        let parse_result = parse_log(line);
+        println!("{:?}", parse_result);
+    }
+}
+
+// enums work with Rust's pattern-matching capabilities
+// enums, like structs, support methods via impl blocks
+// Rust's enums are more powerful than a set of constants
+
+// enum variants can contain data:
+enum Suit {
+    Clubs,
+    Spades,
+    Diamonds,
+    Hearts,
+}
+
+enum Card {
+    King(Suit),
+    Queen(Suit),
+    Jack(Suit),
+    Ace(Suit),
+    Pip(Suit,usize),
+}
+
+// Using an enum to manage internal state
