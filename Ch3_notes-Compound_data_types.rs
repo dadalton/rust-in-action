@@ -496,7 +496,7 @@ abstract base classes, contracts
 Traits enable the compiler to know that multiple types are attempting to
 perform the same task
 */
-
+/*
 #![allow(unused_variables)]
 
     #[derive(Debug)]
@@ -509,7 +509,7 @@ perform the same task
         ) -> Result<usize, String>; // type signatures implementors must follow
     }
 
-    impl Read for File { // implement Trait for Stuct
+    impl Read for File { // implement Trai for Stuct
         fn read(self: &File, save_to: &mut Vec<u8>) -> Result<usize, String> {
             Ok(0)
         }
@@ -521,6 +521,159 @@ perform the same task
         let n_bytes = f.read(&mut buffer).unwrap();
         println!("{} byte(s) read from {:?}", n_bytes, f);
     }
-
+*/
 // idiomatic description: "T is Debug" means T imnplements the Debug trait
+
 // ------ Implementing std::fmt::Display for your own types -----
+/*
+The macros println!, print!, write!, writeln!, and format! all use the
+Display and Debug traits
+
+The Display trait requires that types implement a fmt method,
+which returns fmt::Result
+*/
+
+/*
+#![allow(dead_code)]
+
+use std::fmt;
+use std::fmt::{Display};
+
+#[derive(Debug, PartialEq)]
+enum FileState {
+    Open,
+    Closed,
+}
+
+#[derive(Debug)]
+struct File {
+    name: String,
+    data: Vec<u8>,
+    state: FileState,
+}
+
+impl Display for FileState {
+    fn fmt(&self, f: // fmt takes a self reference argument and a mutable
+                     // ref to the Formatter struct
+           &mut fmt::Formatter,
+    ) -> fmt::Result {
+        match *self {
+            FileState::Open => write!(f, "OPEN"),
+            FileState::Closed => write!(f, "CLOSED"),
+        }
+    }
+}
+
+impl Display for File {
+    fn fmt(&self, f:
+           &mut fmt::Formatter,
+    ) -> fmt::Result {
+        write!(f, "<{} ({})>",
+               self.name, self.state)
+    }
+}
+
+impl File {
+    fn new(name: &str) -> File {
+        File {
+            name: String::from(name),
+            data: Vec::new(),
+            state: FileState::Closed,
+        }
+    }
+}
+
+fn main() {
+    let f6 = File::new("f6.txt");
+    //...
+    println!("{:?}", f6);
+    println!("{}", f6);
+}
+*/
+
+/*
+- Traits underlie the generics system and type checking
+- They can be stretched to support a form of inheritance
+- Traits represent common behaviors that types opt into via
+  impl Trait for Type
+*/
+
+// ------- 3.7 EXPOSING YOUR TYPES TO DA WOYLD --------
+// Rust defaults to keeping things private
+// use keyword pub to make public
+/*
+#[derive(Debug,PartialEq)]
+pub enum FileState {
+  Open,
+  Closed,
+}
+ 
+#[derive(Debug)]
+pub struct File {
+  pub name: String,
+  data: Vec<u8>,
+  pub state: FileState,
+}
+ 
+impl File {
+  pub fn new(name: &str) -> File {
+    File {
+        name: String::from(name),
+        data: Vec::new(),
+        state: FileState::Closed
+    }
+  }
+}
+ 
+fn main() {
+  let f7 = File::new("f7.txt");
+  //...
+  println!("{:?}", f7);
+}
+*/
+
+// ------- 3.8 CREATING INLINE DOCUMENTATION -------
+
+/// <--- this generates documents referring to the item that follows
+
+//! <--- this form refers to the current item as the compiler scans the code
+
+//! Simulating files one step at a time.
+ 
+ /// Represents a "file",
+ /// which probably lives on a file system.
+ #[derive(Debug)]
+ pub struct File {
+   name: String,
+   data: Vec<u8>,
+ }
+ 
+ impl File {
+   /// New files are assumed to be empty, but a name is required.
+   pub fn new(name: &str) -> File {
+     File {
+       name: String::from(name),
+       data: Vec::new(),
+     }
+   }
+ 
+   /// Returns the file's length in bytes.
+   pub fn len(&self) -> usize {
+     self.data.len()
+   }
+ 
+   /// Returns the file's name.
+   pub fn name(&self) -> String {
+     self.name.clone()
+   }
+ }
+ 
+ fn main() {
+   let f1 = File::new("f1.txt");
+ 
+   let f1_name = f1.name();
+   let f1_length = f1.len();
+ 
+   println!("{:?}", f1);
+   println!("{} is {} bytes long", f1_name, f1_length);
+ }
